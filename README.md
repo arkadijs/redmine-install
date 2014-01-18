@@ -6,7 +6,7 @@ This is a script to install [Redmine] 2.4.2 on Ubuntu 12.04 LTS with following f
 - Git
 - Mercurial
 - Ruby 1.9.3 with RVM
-- Nginx and Uncorn
+- Nginx and Unicorn
 - SSL
 - 1GB tmpfs for /tmp and /var/tmp
 
