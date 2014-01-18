@@ -1,6 +1,6 @@
 ## Redmine install
 
-This a script to install Redmine 2.4.2 on Ubuntu 12.04 LTS with the following features:
+This is a script to install [Redmine] 2.4.2 on Ubuntu 12.04 LTS with following features:
 - MySQL
 - ImageMagick for Gantt chart
 - Git
@@ -13,3 +13,5 @@ This a script to install Redmine 2.4.2 on Ubuntu 12.04 LTS with the following fe
 Redmine default user/pass is admin/admin.
 
 BSD license.
+
+[Redmine]: http://www.redmine.org/
