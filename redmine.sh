@@ -230,8 +230,8 @@ service nginx start
 
 rm -f /etc/cron.daily/tmpreaper
 
-wget --no-check-certificate -O /usr/local/bin/timkay-aws https://raw.github.com/timkay/aws/master/aws
-chmod +x /usr/local/bin/timkay-aws
+wget --no-check-certificate -O /usr/local/bin/aws2 https://raw.github.com/timkay/aws/master/aws
+chmod +x /usr/local/bin/aws2
 cat >/root/.awssecret <<EOF
 $access_key
 $secret_key
@@ -241,8 +241,8 @@ cat >/usr/local/sbin/redmine-backup.sh <<EOF
 #!/bin/sh
 s3_bucket="$s3_bucket"
 test -n "\$s3_bucket" || exit 0
-mysqldump -e redminedb | bzip2 | /usr/local/bin/timkay-aws put \$s3_bucket/\$(date +%Y%m%d)-database.sql.bz2
-cd $r && tar cj files | /usr/local/bin/timkay-aws put \$s3_bucket/\$(date +%Y%m%d)-files.tar.bz2
+mysqldump -e redminedb | bzip2 | /usr/local/bin/aws2 put \$s3_bucket/\$(date +%Y%m%d)-database.sql.bz2
+cd $r && tar cj files | /usr/local/bin/aws2 put \$s3_bucket/\$(date +%Y%m%d)-files.tar.bz2
 EOF
 chmod +x /usr/local/sbin/redmine-backup.sh
 
