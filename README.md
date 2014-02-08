@@ -9,6 +9,7 @@ This is a script to install [Redmine] 2.4.2 on Ubuntu 12.04 LTS with following f
 - Nginx and Unicorn
 - SSL
 - 1GB tmpfs for /tmp and /var/tmp
+- Backup to AWS S3
 
 Redmine default user/pass is admin/admin.
 

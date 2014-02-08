@@ -1,6 +1,11 @@
 #!/bin/bash
 
 name=redmine.domain.com
+# uncomment to enable Redmine database and uploaded files backup to AWS S3
+# I suggest to setup S3 lifecycle rule for 'redmine-backup-prefix/' to expire old backups
+#s3_bucket=bucket-name/redmine-backup-prefix
+#access_key=
+#secret_key=
 
 set -xe
 umask 022
@@ -83,11 +88,11 @@ chmod o-rwx /home/redmine
 
 mysql_password=$(pwgen 10 1)
 echo redmine mysql password: $mysql_password
-mysql <<EOS
+mysql <<EOF
 create database redminedb character set utf8;
 create user redmine@localhost identified by '$mysql_password';
 grant all privileges on redminedb.* to redmine@localhost;
-EOS
+EOF
 
 mkdir -p /www/blank-page
 touch /www/blank-page/index.html
@@ -164,7 +169,7 @@ openssl req -new -nodes -x509 -days 10000 \
   -keyout /etc/nginx/ssl/$name.key -out /etc/nginx/ssl/$name.crt -extensions v3_ca
 chmod -R go-rwx /etc/nginx/ssl
 
-cat >/etc/nginx/nginx.conf <<EOC
+cat >/etc/nginx/nginx.conf <<EOF
 user  www-data;
 worker_processes  1;
 
@@ -219,15 +224,33 @@ http {
         }
     }
 }
-EOC
+EOF
 
 service nginx start
 
 rm -f /etc/cron.daily/tmpreaper
+
+wget --no-check-certificate -O /usr/local/bin/timkay-aws https://raw.github.com/timkay/aws/master/aws
+chmod +x /usr/local/bin/timkay-aws
+cat >/root/.awssecret <<EOF
+$access_key
+$secret_key
+EOF
+chmod 600 /root/.awssecret
+cat >/usr/local/sbin/redmine-backup.sh <<EOF
+#!/bin/sh
+s3_bucket="$s3_bucket"
+test -n "\$s3_bucket" || exit 0
+mysqldump -e redminedb | bzip2 | /usr/local/bin/timkay-aws put \$s3_bucket/\$(date +%Y%m%d)-database.sql.bz2
+cd $r && tar cj files | /usr/local/bin/timkay-aws put \$s3_bucket/\$(date +%Y%m%d)-files.tar.bz2
+EOF
+chmod +x /usr/local/sbin/redmine-backup.sh
+
 crontab - <<EOF
 17 1 * * * /usr/sbin/ntpdate europe.pool.ntp.org >/dev/null
-3 * * * * /usr/sbin/tmpreaper --mtime 20m --protect "/tmp/passenger*/*/*" /tmp
-4 * * * * /usr/sbin/tmpreaper --mtime 2h /var/tmp
+18 1 * * * /usr/local/sbin/redmine-backup.sh
+ 3 * * * * /usr/sbin/tmpreaper --mtime 20m --protect "/tmp/passenger*/*/*" /tmp
+ 4 * * * * /usr/sbin/tmpreaper --mtime 2h /var/tmp
 EOF
 
 cat >>/etc/fstab <<EOF
