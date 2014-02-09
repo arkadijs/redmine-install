@@ -1,6 +1,7 @@
 #!/bin/bash
 
 name=redmine.domain.com
+ssl_subj="/C=US/ST=Oregon/L=Portland/O=IT/CN=$name"
 # uncomment to enable Redmine database and uploaded files backup to AWS S3
 # I suggest to setup S3 lifecycle rule for 'redmine-backup-prefix/' to expire old backups
 #s3_bucket=bucket-name/redmine-backup-prefix
@@ -84,7 +85,7 @@ gem install bundler unicorn
 set -x
 
 useradd -s /bin/bash -m -G rvm redmine
-chmod o-rwx /home/redmine
+chmod o-rwx ~redmine/
 
 mysql_password=$(pwgen 10 1)
 echo redmine mysql password: $mysql_password
@@ -165,7 +166,7 @@ EOF
 
 mkdir -p /etc/nginx/ssl
 openssl req -new -nodes -x509 -days 10000 \
-  -subj "/C=US/ST=Oregon/L=Portland/O=IT/CN=$name" \
+  -subj "$ssl_subj" \
   -keyout /etc/nginx/ssl/$name.key -out /etc/nginx/ssl/$name.crt -extensions v3_ca
 chmod -R go-rwx /etc/nginx/ssl
 
@@ -173,7 +174,7 @@ cat >/etc/nginx/nginx.conf <<EOF
 user  www-data;
 worker_processes  1;
 
-error_log  /var/log/nginx/error.log notice; #info
+error_log  /var/log/nginx/error.log notice;
 pid        /var/run/nginx.pid;
 
 events {
@@ -257,3 +258,5 @@ cat >>/etc/fstab <<EOF
 tmpfs           /tmp            tmpfs   size=1G                   0       0
 tmpfs           /var/tmp        tmpfs   size=1G                   0       0
 EOF
+
+echo "Reboot now to start Rails Unicorn processes"
