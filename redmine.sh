@@ -104,7 +104,7 @@ curl -L http://www.redmine.org/releases/redmine-2.4.2.tar.gz |
   tar xzo -C $r --strip-components 1 -f -
 cat >$r/config/database.yml <<EOF
 production:
-  adapter: mysql
+  adapter: mysql2
   database: redminedb
   host: 127.0.0.1
   username: redmine
