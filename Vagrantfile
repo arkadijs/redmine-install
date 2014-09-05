@@ -2,8 +2,8 @@
 
 Vagrant.configure("2") do |config|
   config.vm.guest = :linux
-  config.vm.box = "precise32"
-  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+  config.vm.box = "trusty32"
+  config.vm.box_url = "http://files.vagrantup.com/trusty32.box"
 
   config.vm.network :forwarded_port, guest: 443, host: 6443, auto_correct: true
 
