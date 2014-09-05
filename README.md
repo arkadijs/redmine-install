@@ -1,6 +1,6 @@
 ## Redmine install
 
-This is a script to install [Redmine] 2.4.2 on Ubuntu 12.04 LTS with following features:
+This is a script to install [Redmine] 2.5.2 on Ubuntu 14.04 LTS with following features:
 - MySQL
 - ImageMagick for Gantt chart
 - Git

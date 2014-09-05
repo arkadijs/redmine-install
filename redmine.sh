@@ -33,9 +33,9 @@ apt-get install -y $(cat <<EOP
  gcc
  g++
  make
- git-core
+ git
  mercurial
- mysql-server-5.5
+ mysql-server-5.6
  ttf-dejavu-core
  libbz2-dev
  libcurl4-gnutls-dev
@@ -46,14 +46,14 @@ apt-get install -y $(cat <<EOP
  libicu-dev
  libidn11-dev
  libjasper-dev
- libjpeg8-dev
+ libjpeg-turbo8-dev
  liblcms1-dev
  libmcrypt-dev
  libmysqlclient-dev
  libpcre3-dev
  libpng12-dev
  libssh2-1-dev
- libtiff4-dev
+ libtiff5-dev
  libxml2-dev
  libxslt1-dev
  libzzip-dev
@@ -65,11 +65,12 @@ curl -L http://www.imagemagick.org/download/ImageMagick.tar.xz |
   xzcat | tar xf -
 chown -R 0:0 ImageMagick-*
 cd ImageMagick-* &&
-  ./configure --enable-static=no --without-magick-plus-plus --with-quantum-depth=16 --with-dejavu-font-dir=/usr/share/fonts/truetype/ttf-dejavu &&
+  ./configure --enable-static=no --without-magick-plus-plus --with-quantum-depth=16 --disable-docs \
+              --with-dejavu-font-dir=/usr/share/fonts/truetype/ttf-dejavu &&
   make -j4 && make install
 cd ..
 
-echo "gem: --no-ri --no-rdoc" > ~/.gemrc
+echo "gem: --no-ri --no-rdoc" >> ~/.gemrc
 curl -L https://get.rvm.io | bash -s stable
 # TODO: after install, prepend to /etc/profile.d/rvm.sh
 #id | grep -F '(rvm)' >/dev/null
@@ -94,13 +95,14 @@ create database redminedb character set utf8;
 create user redmine@localhost identified by '$mysql_password';
 grant all privileges on redminedb.* to redmine@localhost;
 EOF
+echo -e '[mysqld]\nperformance_schema=0' >/etc/mysql/conf.d/mysqld_performance_schema.cnf
 
 mkdir -p /www/blank-page
 touch /www/blank-page/index.html
 
 r=/www/$name
 mkdir -p $r
-curl -L http://www.redmine.org/releases/redmine-2.4.2.tar.gz |
+curl -L http://www.redmine.org/releases/redmine-2.5.2.tar.gz |
   tar xzo -C $r --strip-components 1 -f -
 cat >$r/config/database.yml <<EOF
 production:
