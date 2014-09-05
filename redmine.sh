@@ -162,8 +162,8 @@ chown -h redmine:redmine ~redmine/*
 crontab -u redmine - <<EOF
 MAILTO=root
 SHELL=/bin/bash
-@reboot cd \$HOME/$name && . /etc/profile.d/rvm.sh && rvm use 1.9@redmine && \$HOME/unicorn.sh
-*/10 * * * * cd \$HOME/$name && . /etc/profile.d/rvm.sh && rvm use 1.9@redmine && ruby script/rails runner "Repository.fetch_changesets" -e production
+@reboot cd \$HOME/$name && . /etc/profile.d/rvm.sh && rvm use 1.9@redmine >/dev/null && \$HOME/unicorn.sh
+*/10 * * * * cd \$HOME/$name && . /etc/profile.d/rvm.sh && rvm use 1.9@redmine >/dev/null && ruby script/rails runner "Repository.fetch_changesets" -e production
 EOF
 
 mkdir -p /etc/nginx/ssl
