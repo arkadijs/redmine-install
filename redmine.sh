@@ -256,6 +256,8 @@ crontab - <<EOF
  4 * * * * /usr/sbin/tmpreaper --mtime 2h /var/tmp
 EOF
 
+sed -i -re 's/^(smtp.*tls)/#\1/' /etc/postfix/main.cf
+
 cat >>/etc/fstab <<EOF
 tmpfs           /tmp            tmpfs   size=1G                   0       0
 tmpfs           /var/tmp        tmpfs   size=1G                   0       0
